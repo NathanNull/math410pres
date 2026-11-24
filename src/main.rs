@@ -7,6 +7,7 @@ use itertools::Itertools as _;
 
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const DKBLUE: &str = "#000066";
+const DKGREY: &str = "#222222";
 
 fn main() {
     dioxus::launch(App);
@@ -31,6 +32,14 @@ fn App() -> Element {
             margin_top: "25px",
             Machine {}
         },
+    }
+}
+
+fn select<T>(b: bool, if_t: T, if_f: T) -> T {
+    if b {
+        if_t
+    } else {
+        if_f
     }
 }
 
@@ -130,6 +139,85 @@ fn Machine() -> Element {
             margin_top: "20px",
             "State: {machine.read().state_display()}\nSteps: {steps.read()}"
         },
+        div {
+            width: "100%",
+            justify_content: "center",
+            display: "flex",
+            flex_direction: "row",
+            margin_top: "15px",
+            div {
+                display: "grid",
+                grid_template_columns: "auto auto auto auto auto",
+                flex: "0",
+                width: "auto",
+                font_size: "20pt",
+                text_align: "center",
+                column_gap: "2px",
+                background_color: "white",
+                div {
+                    background_color: DKGREY,
+                    padding: "5px",
+                    margin_bottom: "2px",
+                    "State"
+                },
+                div {
+                    background_color: DKGREY,
+                    padding: "5px",
+                    margin_bottom: "2px",
+                    "Read"
+                },
+                div {
+                    background_color: DKGREY,
+                    padding: "5px",
+                    margin_bottom: "2px",
+                    "Write"
+                },
+                div {
+                    background_color: DKGREY,
+                    padding: "5px",
+                    margin_bottom: "2px",
+                    "Move"
+                },
+                div {
+                    background_color: DKGREY,
+                    padding: "5px",
+                    margin_bottom: "2px",
+                    "Next"
+                },
+                for ((state, tape), (newstate, write, dir)) in machine.read().instructions.iter() {
+                    {
+                        let mach = &*machine.read();
+                        let highlight = if mach.state == Some(*state) && mach.cell_at(0) == *tape {"grey"} else {DKGREY};
+                        rsx! {div {
+                            background_color: highlight,
+                            padding: "5px",
+                            "{state}"
+                        },
+                        div {
+                            background_color: highlight,
+                            padding: "5px",
+                            "{tape}"
+                        },
+                        div {
+                            background_color: highlight,
+                            padding: "5px",
+                            "{write}"
+                        },
+                        div {
+                            background_color: highlight,
+                            padding: "5px",
+                            "{select(*dir, 'L', 'R')}"
+                        },
+                        div {
+                            background_color: highlight,
+                            padding: "5px",
+                            "{newstate.map(|c|c.to_string()).unwrap_or_else(||\"HALT\".to_string())}"
+                        },
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
