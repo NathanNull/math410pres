@@ -1,9 +1,11 @@
 [application]
+out_dir = "docs"
 
 [web.app]
 
 # HTML title tag content
 title = "Turing Machine Thing"
+base_path = "math410pres"
 
 # include `assets` in web platform
 [web.resource]
